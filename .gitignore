@@ -1,1 +1,8 @@
+# Go
+bin/
+dist/
+*.exe
+*.test
+*.out
+vendor/
 cli
