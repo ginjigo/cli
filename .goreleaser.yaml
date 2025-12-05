@@ -1,20 +1,27 @@
 version: 2
 
+project_name: ginji
+
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - env:
+  - id: ginji
+    main: .
+    binary: ginji
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
-      - windows
       - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
 
 archives:
   - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of uname.
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -22,10 +29,21 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
         format: zip
+
+brews:
+  - name: ginji
+    repository:
+      owner: ginjigo
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/ginjigo/ginji"
+    description: "Ultra-fast, zero-dependency API framework for Go"
+    test: |
+      system "#{bin}/ginji version"
 
 checksum:
   name_template: 'checksums.txt'
