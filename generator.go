@@ -141,7 +141,18 @@ func processTemplates(rootDir string, opts ProjectOptions) error {
 		}
 
 		// Parse as template
-		tmpl, err := template.New(path).Parse(string(content))
+		funcMap := template.FuncMap{
+			"contains": func(slice []string, item string) bool {
+				for _, s := range slice {
+					if s == item {
+						return true
+					}
+				}
+				return false
+			},
+		}
+
+		tmpl, err := template.New(path).Funcs(funcMap).Parse(string(content))
 		if err != nil {
 			// If it fails to parse (e.g. binary files), just skip
 			return nil
